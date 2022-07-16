@@ -259,6 +259,15 @@ std::vector<fs::path> glob1(const fs::path &dirname, const std::string &pattern,
   auto names = iter_directory(dirname, dironly);
   std::vector<fs::path> filtered_names;
   for (auto &n : names) {
+	bool hidden = false;
+	try {
+	  hidden = is_hidden(n.string());
+	} catch (std::system_error e) {
+	  std::cerr << "std::filesystem error " << e.what() << " for ";
+	  std::wcerr << n.wstring();
+	  std::cerr << "\nSkipping this file!\n";
+	  continue;
+	}
     if (!is_hidden(n.string())) {
       filtered_names.push_back(n.filename());
       // if (n.is_relative()) {
